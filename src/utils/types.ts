@@ -6,4 +6,5 @@ export type Todo = {
     dueDate?: string;
     createdAt?: string;
     index?: number;
+    originalIndex?: number;
 }

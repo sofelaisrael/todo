@@ -1,102 +1,96 @@
 import type { Todo } from "./types";
 
-let todos: Todo[] = []; // Original todos array
-let displayedTodos: Todo[] = []; // Copy of the first 10 todos
+const API_URL = "https://jsonplaceholder.typicode.com/todos";
 
 export const getTodoList = async (): Promise<Todo[]> => {
-    try {
-        return todos;
-    } catch (error) {
-        console.log("err", error);
-        return [];
-    }
+  try {
+    const res = await fetch(`${API_URL}?_limit=10`);
+    const todos: Todo[] = await res.json();
+    return todos;
+  } catch (error) {
+    console.error("Error fetching todos:", error);
+    return [];
+  }
 };
 
 export const addTodo = async (t: Todo): Promise<Todo | undefined> => {
-    try {
-      const newTodo: Todo = {
-        ...t,
-        id: todos.length > 0 ? todos[todos.length - 1].id + 1 : 1, // Generate the next ID
-      };
-  
-      todos.push(newTodo); // Add to the main todos array
-  
-      console.log("Added Todo:", newTodo);
-      return newTodo;
-    } catch (error) {
-      console.log("Error adding todo:", error);
-      return undefined;
-    }
-  };
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(t),
+    });
 
-export const getNextId = async (): Promise<number> => {
-    if (displayedTodos.length === 0) {
-        await getTodoList();
-    }
-    const maxId = displayedTodos.reduce((max, todo) => (todo.id > max ? todo.id : max), 0);
-    const nextId = maxId + 1;
-    console.log(nextId, maxId);
-    return nextId;
+    const newTodo: Todo = await res.json();
+    console.log("Added Todo:", newTodo);
+    return newTodo;
+  } catch (error) {
+    console.error("Error adding todo:", error);
+    return undefined;
+  }
 };
 
-export const updateTodo = async (id: number, updatedFields: Partial<Todo>): Promise<Todo | undefined> => {
-    try {
-        const index = todos.findIndex((todo) => todo.id === id);
-        if (index === -1) {
-            console.log(`Todo with id ${id} not found`);
-            return undefined;
-        }
+export const getNextId = async (): Promise<number> => {
+  const todos = await getTodoList();
+  const maxId = todos.reduce((max, todo) => (todo.id > max ? todo.id : max), 0);
+  return maxId + 1;
+};
 
-        todos[index] = { ...todos[index], ...updatedFields };
+export const updateTodo = async (
+  id: number,
+  updatedFields: Partial<Todo>
+): Promise<Todo | undefined> => {
+  try {
+    const res = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedFields),
+    });
 
-        const displayedIndex = displayedTodos.findIndex((todo) => todo.id === id);
-        if (displayedIndex !== -1) {
-            displayedTodos[displayedIndex] = { ...displayedTodos[displayedIndex], ...updatedFields };
-        }
-
-        console.log("Updated Todo:", todos[index]);
-        return todos[index];
-    } catch (error) {
-        console.log("Error updating todo:", error);
-        return undefined;
-    }
+    const updatedTodo: Todo = await res.json();
+    console.log("Updated Todo:", updatedTodo);
+    return updatedTodo;
+  } catch (error) {
+    console.error("Error updating todo:", error);
+    return undefined;
+  }
 };
 
 export const deleteTodo = async (id: number): Promise<boolean> => {
-    try {
-        const todosLength = todos.length;
-        todos = todos.filter((todo) => todo.id !== id);
+  try {
+    const res = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
 
-        displayedTodos = displayedTodos.filter((todo) => todo.id !== id);
-
-        if (todos.length < todosLength) {
-            console.log(`Todo with id ${id} deleted`);
-            return true;
-        } else {
-            console.log(`Todo with id ${id} not found`);
-            return false;
-        }
-    } catch (error) {
-        console.log("Error deleting todo:", error);
-        return false;
-    }
+    const success = res.ok;
+    console.log(success ? `Todo ${id} deleted` : `Todo ${id} not found`);
+    return success;
+  } catch (error) {
+    console.error("Error deleting todo:", error);
+    return false;
+  }
 };
 
 export const pinTodo = async (id: number): Promise<Todo | undefined> => {
-    try {
-      const index = todos.findIndex((todo) => todo.id === id);
-      if (index === -1) {
-        console.log(`Todo with id ${id} not found`);
-        return undefined;
-      }
-  
-      // Toggle the pinned state
-      todos[index].pinned = !todos[index].pinned;
-  
-      console.log("Pinned/Unpinned Todo:", todos[index]);
-      return todos[index];
-    } catch (error) {
-      console.log("Error pinning/unpinning todo:", error);
-      return undefined;
-    }
-  };
+  try {
+    const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
+    const todo = await res.json();
+
+    const updated = {
+      ...todo,
+      pinned: !todo.pinned, // toggle
+    };
+
+    const putRes = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updated),
+    });
+
+    return await putRes.json(); // <- this should return the updated todo
+  } catch (err) {
+    console.error("Pin error:", err);
+    return undefined;
+  }
+};
+
