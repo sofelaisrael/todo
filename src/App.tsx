@@ -32,7 +32,7 @@ function App() {
     fetchTodos()
   }, [])
 
-  const calculateDueTime = (dueDate: string): string => {
+  const calculateDueTime = (dueDate: string | undefined): string => {
     if (!dueDate) return "No specified date"
   
     const due = new Date(dueDate)
@@ -146,22 +146,25 @@ function App() {
   }
 
   const handlePin = async (id: number) => {
-    const updatedTodo = await pinTodo(id)
+    const updatedTodo = await pinTodo(id);
     if (updatedTodo) {
       setTodo((prevTodos) =>
         prevTodos
           .map((t) => (t.id === id ? updatedTodo : t))
-          .sort((a, b) => {
-          
-            if (b.pinned !== a.pinned)
-              return Number(b.pinned) - Number(a.pinned)
-
-          
-            return a.index - b.index
+          .sort((a: Todo, b: Todo) => {
+            // Sort by pinned status first
+            if (b.pinned !== a.pinned) return Number(b.pinned) - Number(a.pinned);
+  
+            // Fallback to 0 if index is undefined
+            const aIndex = a.index ?? 0;
+            const bIndex = b.index ?? 0;
+  
+            // Sort by original index
+            return aIndex - bIndex;
           })
-      )
+      );
     }
-  }
+  };
 
   const handleDelete = async (id: number) => {
     const isDeleted = await deleteTodo(id)
@@ -171,19 +174,21 @@ function App() {
   }
 
   const openEditModal = (id: number, task: Todo) => {
-    setEditTodoId(id)
-    setTodoTitle(task.title)
-    setIsCompleted(task.completed)
-    const dueDate = new Date(task.dueDate)
-    const now = new Date()
-    const diff = dueDate.getTime() - now.getTime()
-    setDueDays(Math.floor(diff / (1000 * 60 * 60 * 24)).toString())
+    setEditTodoId(id);
+    setTodoTitle(task.title);
+    setIsCompleted(task.completed);
+  
+    const dueDate = task.dueDate ? new Date(task.dueDate) : new Date(); // Fallback to current date
+    const now = new Date();
+    const diff = dueDate.getTime() - now.getTime();
+  
+    setDueDays(Math.floor(diff / (1000 * 60 * 60 * 24)).toString());
     setDueHours(
       Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString()
-    )
-    setShowEditModal(true)
-    setShowModal(false)
-  }
+    );
+    setShowEditModal(true);
+    setShowModal(false);
+  };
 
   const openAddModal = () => {
     setTodoTitle("")
