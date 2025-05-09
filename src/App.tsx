@@ -2,10 +2,8 @@ import { useState, useEffect } from "react";
 import {
   addTodo,
   getTodoList,
-  getNextId,
   updateTodo,
   deleteTodo,
-  pinTodo,
 } from "./utils/todo";
 import type { Todo } from "./utils/types";
 import "./App.css";
