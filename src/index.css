@@ -1,0 +1,128 @@
+
+.todo-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.add-task-button {
+  margin: 10px 0;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-task-button:hover {
+  background-color: #0056b3;
+}
+
+.empty-state {
+  margin-top: 20px;
+  font-size: 18px;
+  color: gray;
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.todo-item {
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.todo-item.overdue-task {
+  border: 1px solid red;
+  background-color: #ffe6e6;
+}
+
+.todo-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.todo-status,
+.todo-due,
+.todo-created {
+  margin: 5px 0;
+}
+
+.todo-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.action-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px;
+  background-color: transparent;
+  color: #333;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.action-button:hover {
+  background-color: #f0f0f0;
+  color: #007bff;
+}
+
+.action-button:active {
+  background-color: #e0e0e0;
+}
+.todo-item {
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: white;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.todo-item.pinned-task {
+  background-color: #e6f7ff;
+  border-color: #1890ff;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.todo-item.pinned-task:hover {
+  background-color: #bae7ff;
+  border-color: #40a9ff;
+}
+
+.todo-item.completed-task {
+  background-color: #e6ffe6;
+  border-color: green;
+}
+
+.todo-actions button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.todo-actions button:hover {
+  background-color: #f0f0f0;
+}
+
+
+input {
+  border: 1px solid black;
+  
+}
